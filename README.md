@@ -20,7 +20,7 @@ A Node.js real-time crypto data pipeline that connects to Binance WebSocket and 
 - 📍 See [dashboard/README.md](./dashboard/README.md) for detailed documentation
 
 > **Where the WebSocket is:** the *backend* consumes a Binance WebSocket (`src/services/stream.js`)
-> and writes each raw tick to SQLite. The *dashboard* contains no WebSocket code — it polls the
+> and writes each raw tick to SQLite. The *dashboard* contains no WebSocket code - it polls the
 > backend HTTP API every 3 seconds.
 
 ## ⚙️ Quick Start
@@ -113,7 +113,7 @@ curl http://localhost:3000/last?n=50
 
 ## 🧾 License
 
-MIT License — you can freely use and modify this project.
+MIT License - you can freely use and modify this project.
 
 ## 👨‍💻 Author
 

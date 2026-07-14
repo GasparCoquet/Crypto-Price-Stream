@@ -17,7 +17,7 @@ The dashboard itself contains **no WebSocket code**. The Binance WebSocket is co
 - 🎨 **UI** - Built with Next.js 15, Chart.js, and Tailwind CSS
 
 > The 5-second bucketing/averaging on the live chart is computed **in the browser** (`app/page.tsx`).
-> The backend does not aggregate — it stores every raw trade tick.
+> The backend does not aggregate - it stores every raw trade tick.
 
 ## 🚀 Getting Started
 
