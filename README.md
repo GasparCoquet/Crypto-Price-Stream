@@ -13,11 +13,15 @@ A Node.js real-time crypto data pipeline that connects to Binance WebSocket and 
 - 🧩 Clean modular architecture (easily extendable)
 
 **Frontend Dashboard**
-- 📈 Interactive line charts showing live price movements
-- 🔄 Auto-refresh: WebSocket every 5s, REST page every 60s
-- 📊 Real-time price display with timestamp
-- 🎨 Modern responsive UI built with Next.js and Chart.js
+- 📈 Interactive line charts showing recent price movements
+- 🔄 Auto-refresh: live page polls the API every 3s over HTTP; historical page every 60s
+- 📊 Latest price display with timestamp
+- 🎨 Responsive UI built with Next.js and Chart.js
 - 📍 See [dashboard/README.md](./dashboard/README.md) for detailed documentation
+
+> **Where the WebSocket is:** the *backend* consumes a Binance WebSocket (`src/services/stream.js`)
+> and writes each raw tick to SQLite. The *dashboard* contains no WebSocket code — it polls the
+> backend HTTP API every 3 seconds.
 
 ## ⚙️ Quick Start
 

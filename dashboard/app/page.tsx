@@ -50,7 +50,7 @@ export default function Home() {
   const startTime = now - windowMs;
   const arr = Array.isArray(data) ? data : [];
   
-  // Data is now already aggregated into 5-second intervals by the backend
+  // Raw trade ticks as stored by the backend (no server-side aggregation)
   const rawPoints = arr
     .slice()
     .reverse() // oldest → newest
@@ -62,7 +62,7 @@ export default function Home() {
     }))
     .filter((d) => d.ts >= startTime && d.ts <= now);
   
-  // Aggregate data into 5-second intervals and fill gaps
+  // Aggregate data into 5-second intervals (client-side) and fill gaps
   const INTERVAL_MS = 5000; // 5 seconds
   const filledPoints: FilledPoint[] = [];
   
@@ -274,8 +274,9 @@ export default function Home() {
         )}
       </div>
       <div className="text-xs text-gray-500 bg-gray-50 p-3 rounded">
-        🔄 <b>Note:</b> This chart uses WebSocket streaming for real-time price updates. 
-        Data is aggregated into 5-second intervals and stored in the database.
+        🔄 <b>Note:</b> The backend consumes a Binance WebSocket and stores every raw tick in SQLite.
+        This page does not use WebSockets: it polls the API (<code>/api/last</code>) every 3s over HTTP,
+        and the 5-second averaging shown above is computed in the browser.
       </div>
     </main>
   );

@@ -1,18 +1,23 @@
 📊 Crypto Price Stream - Dashboard
 
-Next.js web dashboard for visualizing real-time cryptocurrency price data from the backend API.
+Next.js web dashboard for visualizing recent cryptocurrency price data served by the backend API.
 
 ## 🎯 Overview
 
-This dashboard provides real-time visualization of crypto prices streamed from Binance via the backend service. It features two views: a live WebSocket price chart and a REST API chart displaying close prices.
+This dashboard visualizes crypto prices collected from Binance by the backend service. It features two views: a live price chart and a REST API chart displaying close prices.
+
+The dashboard itself contains **no WebSocket code**. The Binance WebSocket is consumed by the *backend* (`src/services/stream.js`), which stores each raw tick in SQLite; the dashboard polls the backend HTTP API every 3 seconds.
 
 ## ✨ Features
 
-- 📈 **Live Price Chart (WebSocket)** - Interactive line chart showing last 5 minutes of price data
+- 📈 **Live Price Chart** - Interactive line chart showing the last 5 minutes of price data, polled from `/api/last` every 3s
 - 📊 **REST API Chart** - Historical close price visualization as a line chart
-- 🔄 **Auto-Refresh** - WebSocket updates every 5s, REST API updates every 60s
-- 📊 **Real-time Display** - Shows current pair, price, and timestamp
-- 🎨 **Modern UI** - Built with Next.js 15, Chart.js, and Tailwind CSS
+- 🔄 **Auto-Refresh** - Live page: 3s HTTP polling. Historical page: 60s HTTP polling.
+- 📊 **Latest Price Display** - Shows current pair, price, and timestamp
+- 🎨 **UI** - Built with Next.js 15, Chart.js, and Tailwind CSS
+
+> The 5-second bucketing/averaging on the live chart is computed **in the browser** (`app/page.tsx`).
+> The backend does not aggregate — it stores every raw trade tick.
 
 ## 🚀 Getting Started
 
@@ -41,7 +46,7 @@ Open [http://localhost:3001](http://localhost:3001) in your browser.
 ```
 dashboard/
 ├─ app/
-│  ├─ page.tsx              # Main dashboard (live price chart - WebSocket)
+│  ├─ page.tsx              # Main dashboard (live price chart - 3s HTTP polling)
 │  ├─ historical/
 │  │  └─ page.tsx           # REST API chart (historical close price)
 │  ├─ api/
@@ -87,7 +92,6 @@ Fetches historical close price data from the backend (REST API).
 - **Styling:** Tailwind CSS 4
 - **Charts:** Chart.js + react-chartjs-2
 - **Data Fetching:** SWR (stale-while-revalidate)
-- **Financial Charts:** chartjs-chart-financial
 
 ### Available Scripts
 
@@ -110,22 +114,22 @@ This tells the dashboard where to find the backend API. The default is `http://l
 
 ## 📊 How It Works
 
-1. **Backend streams data** → Prices are stored in SQLite database
-2. **Dashboard fetches data** → API routes fetch from backend via HTTP
-3. **Charts update** → SWR auto-refreshes every 3 seconds
-4. **User sees live data** → Charts display with smooth animations
+1. **Backend streams data** → Binance WebSocket ticks are stored in a SQLite database
+2. **Dashboard fetches data** → Next.js API routes fetch from the backend via HTTP
+3. **Charts update** → SWR polls: every 3s on the live page, every 60s on the historical page
+4. **User sees the data** → Charts re-render on each poll
 
 ### Data Flow
 
 ```
-Binance → Backend (stream.js) → SQLite DB → HTTP API → Dashboard (Next.js) → Charts
+Binance WebSocket → Backend (stream.js) → SQLite DB → HTTP API → Dashboard (3s poll) → Charts
 ```
 
 ## 🎨 Customization
 
-### Change Update Interval
+### Change Polling Interval
 
-Edit `app/page.tsx` line 27:
+Edit the `useSWR` call in `app/page.tsx`:
 
 ```typescript
 const { data } = useSWR('/api/last?n=1200', fetcher, { refreshInterval: 3000 }); // 3 seconds
@@ -133,7 +137,7 @@ const { data } = useSWR('/api/last?n=1200', fetcher, { refreshInterval: 3000 });
 
 ### Modify Chart Time Window
 
-Edit `app/page.tsx` line 32:
+Edit `windowMs` in `app/page.tsx`:
 
 ```typescript
 const windowMs = 5 * 60 * 1000; // 5 minutes
